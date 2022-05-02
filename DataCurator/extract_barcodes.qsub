@@ -1,0 +1,21 @@
+#!/bin/bash -l
+
+echo "Running job $JOB_ID"
+echo "Started: $(date +%F)"
+echo "Running in directory: $PWD"
+
+# Load modules
+module load python3/3.6.5
+module load umitools/1.0.0
+
+samples=/projectnb/bf528/project_4_scrnaseq/fastq
+
+# Read each run and extract barcode
+zcat $samples/SRR3879604/SRR3879604_1_bc.fastq.gz > SRR_604_bc.fastq
+zcat $samples/SRR3879605/SRR3879605_1_bc.fastq.gz > SRR_605_bc.fastq 
+zcat $samples/SRR3879606/SRR3879606_1_bc.fastq.gz > SRR_606_bc.fastq
+
+awk '{if(NR%4==2){print substr($1,1,19)}}' SRR_604_bc.fastq | sort | uniq -c > read_counts_604.txt
+awk '{if(NR%4==2){print substr($1,1,19)}}' SRR_605_bc.fastq | sort | uniq -c > read_counts_605.txt
+awk '{if(NR%4==2){print substr($1,1,19)}}' SRR_606_bc.fastq | sort | uniq -c > read_counts_606.txt
+
